@@ -1,0 +1,17 @@
+ID,Process Level 1,Process Level 2,Process Level 3,Input,Task,Output
+1.1,Requirements Gathering and Analysis,Domain Research,N/A,Information about the side hustle domain,Conduct extensive research on the specific side hustle domain,Comprehensive understanding of the side hustle domain
+1.2,Requirements Gathering and Analysis,User Requirements Collection,N/A,User requirements and expectations,Collaborate with end-users to gather specific requirements and expectations,Detailed user requirements document
+1.3,Requirements Gathering and Analysis,Data Analysis,N/A,Available data related to the side hustle tasks,"Analyze available data to identify patterns, trends, and potential areas for improvement",Initial insights on potential data sources and patterns
+2.1.1,Design and Development,AI Architecture Design,Define System Requirements,User requirements document,Identify and define the system requirements based on the user requirements document,Defined system requirements
+2.1.2,Design and Development,AI Architecture Design,Design AI Architecture,"Defined system requirements, Available data sources",Design the AI architecture based on the system requirements and available data sources,Preliminary AI architecture design
+2.1.3,Design and Development,AI Architecture Design,Review and Finalize AI Architecture,Preliminary AI architecture design,Review and finalize the AI architecture design,Final AI architecture design
+2.2,Design and Development,AI Model Development,N/A,AI model architectures and algorithms,Develop the AI models by implementing appropriate algorithms and techniques,Trained AI models
+2.3,Design and Development,Data Pipeline Construction,N/A,Available data sources,Build the necessary data pipelines for the AI models,Data pipelines for processing and integrating data
+2.4,Design and Development,User Interface Development,N/A,"User requirements document, AI application architecture design",Develop the user interface and interactivity for the AI application,User-interface design and implementation
+3.1,Testing and Evaluation,Application Testing,N/A,AI application prototype,Conduct rigorous testing on the AI application prototype,Bug-free and optimized AI application prototype
+3.2,Testing and Evaluation,User Feedback Collection,N/A,Side hustlers' feedback and inputs,Gather feedback from a targeted group of side hustlers and freelancers,User feedback and evaluation results
+3.3,Testing and Evaluation,AI Model Evaluation,N/A,"Trained AI models, Benchmark and evaluation metrics",Evaluate the performance of the AI models,Improved AI models
+3.4,Testing and Evaluation,Application Refinement,N/A,User feedback and evaluation results,Iteratively refine and improve the AI application based on test results and user feedback,Improved AI application prototype
+4.1,Deployment and Integration,Infrastructure Preparation,N/A,"Fully tested and optimized AI application, Infrastructure requirements for deployment",Prepare the infrastructure and system requirements for deploying the AI application,Ready infrastructure for AI application deployment
+4.2,Deployment and Integration,AI Application Integration,N/A,"Fully tested and optimized AI application, Existing side hustle platforms, tools, and systems","Integrate the AI application with existing side hustle platforms, tools, and systems",Integrated AI application
+4.3,Deployment and Integration,User Onboarding and Support,N/A,User onboarding and support plan,Implement the user onboarding and support plan,Successful user onboarding and ongoing support

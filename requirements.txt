@@ -1,0 +1,6 @@
+streamlit
+openai
+os
+csv
+ast
+pandas
