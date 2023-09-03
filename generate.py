@@ -5,9 +5,7 @@ import csv
 import ast
 import pandas as pd
 
-
-# Set the OpenAI API key from environment variable
-openai.api_key = os.getenv("OPENAI_API_KEY")
+os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
 
 delimiter = "###"
 
@@ -151,7 +149,7 @@ if st.button("Generate CSV File"):
         expert_role = generate_expert_role(process_name)
     st.success('Expert Role Generated!')
     st.subheader('CSV Generation Process')
-    st.text("Generated Expert Role: " + expert_role + "\n" + "---")
+    st.write("Generated Expert Role: " + expert_role + "\n" + "---")
 
     # Show a spinner while generating phases
     with st.spinner('Generating Phases...'):
