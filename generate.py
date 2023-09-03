@@ -11,7 +11,8 @@ delimiter = "###"
 
 # Streamlit UI
 st.title("Process CSV Generator")
-st.write("Use this tool, type in a process and your company type and get a CSV file of processes, inputs and outputs.")
+st.write("Turn a process name and into a CSV file with subprocesses, inputs and outputs.")
+st.image('https://ibb.co/7WLPV68', caption='Example Output.', use_column_width=True)
 process_name = st.text_input("Enter the process name:", "User Research")
 company_type = st.text_input("Enter the company type:", "Startup")
 
@@ -65,7 +66,18 @@ def generate_phases(process_name, expert_role):
 
 def generate_steps(process_name, expert_role, phases, company_type):
     system = f"""{expert_role} You will create an extensive process for {process_name}. It is made for {company_type}. We will go from the existing Phases = Process Level one to process level 2 and level 3 which are the subprocesses of eachother. This is process level 1: {phases}."""
-    prompt = f"""You will first generate a list of Process Level 2 with short 1-2 bullet points for input, process level 3 and output. Afterwards you will generate Process Level 3 for each process in process level 2. For each Process level 3 define, input, task and output."""
+    prompt = f"""You will first generate a bullet list of all Processes Level 2. 
+    In the following Structure:
+    [1. Process Level 1 Name]
+    - First Process Level 2 of Process Level 1, Input, Task, Output
+    - Second Process Level 2 of Process Level 1, Input, Task, Output
+    - Third Process Level 2 of Process Level 1, Input, Task, Output
+    - ...
+    [2. Process Level 1 Name]
+    - First Process Level 2 of Process 2, Input, Task, Output
+    - Second Process Level 2 of Process Level 2, Input, Task, Output
+    ... and so on until the last process
+    Afterwards you will generate a detailled version of process level 3 with one bullet points each for input, task and output. Afterwards you will generate Process Level 3 for each process in process level 2. For each Process level 3 define, input, task and output."""
 
     try:
         response = openai.ChatCompletion.create(
