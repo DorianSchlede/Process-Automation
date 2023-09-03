@@ -11,8 +11,8 @@ delimiter = "###"
 
 # Streamlit UI
 st.title("Process CSV Generator")
-st.write("Use this tool, type in a process and your company type and get a CSV file of processes, inputs and outputs.")
-st.image('https://ibb.co/7WLPV68', caption='Example Output.', use_column_width=True)
+st.write("Use this tool, type in a process and your company type and get a CSV file of processes, inputs and outputs. The process will take 3-5 Minutes.")
+st.image('https://i.ibb.co/0MvTZd8/process-generation-example.png', caption='Example Output.', use_column_width=True)
 process_name = st.text_input("Enter the process name:", "User Research")
 company_type = st.text_input("Enter the company type:", "Startup")
 
