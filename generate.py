@@ -11,67 +11,41 @@ delimiter = "###"
 
 # Streamlit UI
 st.title("Process CSV Generator")
-<<<<<<< HEAD
-st.write("Turn a process name and into a CSV file with subprocesses, inputs and outputs.")
-st.image('https://ibb.co/7WLPV68', caption='Example Output.', use_column_width=True)
-=======
 st.write("Use this tool to generate any process in detail. Just type in the name and your situation and get a CSV file of processes, inputs and outputs. The generation will take about 3 Minutes.")
 st.image('https://i.imgur.com/kNfSHLC.png', caption='Example Output.', use_column_width=True)
->>>>>>> ba56843fc82423fed805039448c85eb65cbe3900
 process_name = st.text_input("Enter the process name:", "User Research")
 company_type = st.text_input("Enter the company type:", "Startup")
 
-
-def generate_expert_role(process_name):
-    # Construct the prompt for the OpenAI API
-    prompt = f"Describe an expert role with knowledge about {process_name} for {company_type} in up to 40 words. Write in plain text. Start your reply with 'You are'."
-    
-    # Call the OpenAI API using the ChatCompletion endpoint
+def call_openai_api(prompt, max_tokens=100, model="gpt-4", temperature=0):
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model=model,
             messages=[
                 {"role": "system", "content": ""},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=100  
+            max_tokens=max_tokens,
+            temperature=temperature
         )
-        
-        # Extract the relevant content from the API response
-        expert_role = response['choices'][0]['message']['content'].strip()
-    except KeyError:
-        return "An error occurred while parsing the API response."
-    
-    print(f"Generated expert role: {expert_role}")
+        return response['choices'][0]['message']['content'].strip()
+    except (KeyError, Exception) as e:
+        return f"An error occurred: {e}"
 
+
+def generate_expert_role(process_name, company_type):
+    prompt = f"Describe an expert role with knowledge about {process_name} for {company_type} in up to 40 words. Write in plain text. Start your reply with 'You are'."
+    expert_role = call_openai_api(prompt, max_tokens=100, model="gpt-3.5-turbo")
+    print(f"Generated expert role: {expert_role}")
     return expert_role
 
-def generate_phases(process_name, expert_role):
-    prompt = f"""{expert_role}. Generate a process for {process_name}. It is made for {company_type}. Map out the 3-5 high level phases of this process. Define Input, Task and Output for each of them in a few bullet points."""
-    # Call the OpenAI API using the ChatCompletion endpoint
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": ""},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=1000 
-        )
-        
-        # Extract the relevant content from the API response
-        phases = response['choices'][0]['message']['content'].strip()
-    except KeyError:
-        return "An error occurred while parsing the API response."
-    
-    print(f"Phases: {phases}")
-
+def generate_phases(process_name, expert_role, company_type):
+    prompt = f"{expert_role}. Generate a process for {process_name}. It is made for {company_type}. Map out the 3-5 high level phases of this process. Define Input, Task and Output for each of them in a few bullet points."
+    phases = call_openai_api(prompt, max_tokens=1000)
     return phases
 
-
 def generate_steps(process_name, expert_role, phases, company_type):
-    system = f"""{expert_role} You will create an extensive process for {process_name}. It is made for {company_type}. We will go from the existing Phases = Process Level one to process level 2 and level 3 which are the subprocesses of eachother. This is process level 1: {phases}."""
-    prompt = f"""You will first generate a bullet list of all Processes Level 2. 
+    prompt = f"""{expert_role} You will create an extensive process for {process_name}. It is made for {company_type}. We will go from the existing Phases = Process Level one to process level 2 and level 3 which are the subprocesses of eachother. This is process level 1: {phases}.
+    You will first generate a bullet list of all Processes Level 2. 
     In the following Structure:
     [1. Process Level 1 Name]
     - First Process Level 2 of Process Level 1, Input, Task, Output
@@ -84,23 +58,8 @@ def generate_steps(process_name, expert_role, phases, company_type):
     ... and so on until the last process
     Afterwards you will generate a detailled version of process level 3 with one bullet points each for input, task and output. Afterwards you will generate Process Level 3 for each process in process level 2. For each Process level 3 define, input, task and output."""
 
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=3000,
-            temperature=0
-        )
-        # Extract the relevant content from the API response
-        steps = response['choices'][0]['message']['content'].strip()
-    except KeyError:
-        return "An error occurred while parsing the API response."
-    
+    steps = call_openai_api(prompt, max_tokens=3000)
     print(f"Steps: {steps}")
-
     return steps
 
 def generate_library(steps):
@@ -118,23 +77,8 @@ def generate_library(steps):
     .   
          You will output the full dictionary and every process Level 3 - one per ID. You will not leave out anything. You will only output the dictionary and nothing else."""
     
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": ""},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=4000,
-            temperature=0
-        )
-        # Extract the relevant content from the API response
-        library = response['choices'][0]['message']['content'].strip()
-    except KeyError:
-        return "An error occurred while parsing the API response."
-    
+    library = call_openai_api(prompt, max_tokens=4000)
     print(f"Library: {library}")
-    
     return library
 
 def write_dict_to_csv(dictionary, filename):
