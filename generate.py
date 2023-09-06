@@ -35,35 +35,36 @@ def call_openai_api(prompt, max_tokens=100, model="gpt-4", temperature=0):
 def generate_expert_role(process_name, company_type):
     prompt = f"Describe an expert role with knowledge about {process_name} for {company_type} in up to 40 words. Write in plain text. Start your reply with 'You are'."
     expert_role = call_openai_api(prompt, max_tokens=100, model="gpt-3.5-turbo")
-    print(f"Generated expert role: {expert_role}")
     return expert_role
 
 def generate_phases(process_name, expert_role, company_type):
-    prompt = f"{expert_role}. Generate a process for {process_name}. It is made for {company_type}. Map out the 3-5 high level phases of this process we call it Process Level 1. You will output in the following way:\
-    process level 1. \
-    Input:\
-    Processes Level 2: \
-    Output: \
-    Define Input, Task and Output for each process level 1 in a few bullet points."
+    prompt = f"""{expert_role}. Generate a process for {process_name} that is fits for {company_type}. Map out the 3-5 high level phases of this process.
+    You will output in the following format:
+    Phase 1: Phase 1 Name
+    Input: Input of Phase 1
+    Tasks: Tasks within Phase 1
+    Output: Output of Phase 1
+    Generate each phase of {process_name}.
+    """
     phases = call_openai_api(prompt, max_tokens=1000)
     return phases
 
 def generate_steps(process_name, expert_role, phases, company_type):
-    prompt = f"""{expert_role} You will create an extensive process for {process_name}. It is made for {company_type}. We will go from the existing Phases = Process Level one to process level 2 and level 3 which are the subprocesses of eachother. This is process level 1: {phases}.
-    You will generate a bullet list of all Processes Level 2 and 3. 
-    In the following Structure:
-    - 1. Process Level 1 Name
-    - 1.1 Input, Task, Output
-    - 1.1.1 Input, Task, Output
-
-
-    You will generate every process up to level 3.
-    Afterwards you will generate a detailled version of process level 3 with one bullet points each for input, task and output. Afterwards you will generate Process Level 3 for each process in process level 2. For each Process level 3 define, input, task and output."""
-
+    prompt = f"""{expert_role} You will create an extensive process for {process_name}. It is made for {company_type}. For each phase you will generate a bullet list of all Processes Level 2. 
+    These are the existing phases: {phases}.
+    You will output in the following format:
+    Phase 1: Phase 1 Name
+    1.1: Name Task 1 in Phase 1
+    Input: Input of Task 1 in Phase 1
+    Output: Output of Task 1 in Phase 1
+    1.2: Name Task 2 in Phase 1
+    Input: Input of Task 2 in Phase 1
+    Output: Output of Task 2 in Phase 1
+    Phase 2: Phase 2 Name
+    You will generate every task within each phase."""
     steps = call_openai_api(prompt, max_tokens=3000)
     print(f"Steps: {steps}")
     return steps
-
 
 def generate_library(steps):
     prompt=f"""You will take the content {steps} and output is as a python dictionary.
