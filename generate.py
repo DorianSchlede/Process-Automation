@@ -97,6 +97,7 @@ def str_to_dict(dict_str):
 st.title("Process CSV Generator")
 
 
+
 # Sidebar for selection
 menu = ["Generate Process", "All Processes"]
 choice = st.sidebar.selectbox("Menu", menu)
@@ -107,13 +108,12 @@ if choice == "Generate Process":
     process_name = st.text_input("Enter the process name:", "User Research")
     company_type = st.text_input("Enter the company type:", "Startup")
 
+    # Initialize the session state variable if it doesn't exist yet
+    if 'library_dict' not in st.session_state:
+        st.session_state.library_dict = None
 
-# Initialize the session state variable if it doesn't exist yet
-if 'library_dict' not in st.session_state:
-    st.session_state.library_dict = None
-
-# Button to trigger all parts in sequence
-if st.button("Generate CSV File"):
+    # Button to trigger all parts in sequence
+    if st.button("Generate CSV File"):
     
     # Show a spinner while generating the expert role
     with st.spinner('Generating Expert Role...'):
@@ -141,24 +141,23 @@ if st.button("Generate CSV File"):
     st.session_state.library_dict = str_to_dict(library)  # Store in session state
     
   # Check if there's data in the session state to display
-if st.session_state.library_dict is not None:
-    if st.session_state.library_dict != "Conversion failed":
-        csv_file_name = f"{process_name}_generated.csv"
-        write_dict_to_csv(st.session_state.library_dict, csv_file_name)
-        
-        df = pd.read_csv(csv_file_name)
-        st.subheader('Generated CSV Data')
-        st.dataframe(df)
-        
-        st.download_button(
-            label="Download Library CSV",
-            data=pd.read_csv(csv_file_name).to_csv(index=False),
-            file_name="library.csv",
-            mime="text/csv"
-        )
-    else:
-        st.error("Failed to convert library string to dictionary.")
-
+    if st.session_state.library_dict is not None:
+         if st.session_state.library_dict != "Conversion failed":
+            csv_file_name = f"{process_name}_generated.csv"
+            write_dict_to_csv(st.session_state.library_dict, csv_file_name)
+            
+            df = pd.read_csv(csv_file_name)
+            st.subheader('Generated CSV Data')
+            st.dataframe(df)
+            
+            st.download_button(
+                label="Download Library CSV",
+                data=pd.read_csv(csv_file_name).to_csv(index=False),
+                file_name="library.csv",
+                mime="text/csv"
+            )
+        else:
+            st.error("Failed to convert library string to dictionary.")
 
 elif choice == "All Processes":
     # List all saved CSVs
