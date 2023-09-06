@@ -47,14 +47,18 @@ def generate_steps(process_name, expert_role, phases, company_type):
     You will first generate a bullet list of all Processes Level 2. 
     In the following Structure:
     [1. Process Level 1 Name]
-    - First Process Level 2 of Process Level 1, Input, Task, Output
-    - Second Process Level 2 of Process Level 1, Input, Task, Output
-    - Third Process Level 2 of Process Level 1, Input, Task, Output
+    - 1.1: Input, Task, Output
+    - 1.1.1: Input, Task, Output
+    - 1.1.2: Input, Task, Output
+    - 1.1.3:Input, Task, Output
+    - 1.2. Input, Task, Output
+    - 1.2.1 Input, Task, Output
+    - 1.2.2 Input, Task, Output
+    - 1.3. Input, Task, Output
     - ...
     [2. Process Level 1 Name]
-    - First Process Level 2 of Process 2, Input, Task, Output
-    - Second Process Level 2 of Process Level 2, Input, Task, Output
-    ... and so on until the last process
+    - 2.1
+    - ...
     Afterwards you will generate a detailled version of process level 3 with one bullet points each for input, task and output. Afterwards you will generate Process Level 3 for each process in process level 2. For each Process level 3 define, input, task and output."""
 
     steps = call_openai_api(prompt, max_tokens=3000)
@@ -80,20 +84,16 @@ def generate_library(steps):
     print(f"Library: {library}")
     return library
 
-def write_dict_to_csv(dictionary, filename):
-    # Make sure the 'saved_csvs' directory exists
-    if not os.path.exists('saved_csvs'):
-        os.makedirs('saved_csvs')
-
-    # Write the CSV file to the 'saved_csvs' directory
-    with open(f'saved_csvs/{filename}', 'w', newline='') as csvfile:
-        fieldnames = ['ID', 'Process Level 1', 'Process Level 2', 'Process Level 3', 'Input', 'Task', 'Output']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        for id, value in dictionary.items():
-            row = {'ID': id}
-            row.update(value)
-            writer.writerow(row)
+def generate_csv_string(dictionary):
+    output = io.StringIO()
+    fieldnames = ['ID', 'Process Level 1', 'Process Level 2', 'Process Level 3', 'Input', 'Task', 'Output']
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+    for id, value in dictionary.items():
+        row = {'ID': id}
+        row.update(value)
+        writer.writerow(row)
+    return output.getvalue()
 
 
 def str_to_dict(dict_str):
@@ -124,69 +124,30 @@ if st.session_state.page == "Generate Process":
     process_name = st.text_input("Enter the process name:", "User Research")
     company_type = st.text_input("Enter the company type:", "Startup")
 
-    # Initialize the session state variable if it doesn't exist yet
-    if 'library_dict' not in st.session_state:
-        st.session_state.library_dict = None
+    if st.session_state.library_dict is not None:
+        if st.session_state.library_dict != "Conversion failed":
+            csv_string = generate_csv_string(st.session_state.library_dict)
+            df = pd.read_csv(io.StringIO(csv_string))
 
-    # Button to trigger all parts in sequence
-    if st.button("Generate CSV File"):
-    
-        # Show a spinner while generating the expert role
-        with st.spinner('Generating Expert Role...'):
-            expert_role = generate_expert_role(process_name, company_type)
-        st.success('Expert Role Generated!')
-        st.subheader('CSV Generation Process')
-        st.write("Generated Expert Role: " + expert_role + "\n" + "---")
+            st.subheader('Generated CSV Data')
+            st.dataframe(df)
 
-        # Show a spinner while generating phases
-        with st.spinner('Generating Phases...'):
-            phases = generate_phases(process_name, expert_role, company_type)
-        st.success('Phases Generated!')
-        st.write(f"Generated Phases: {phases}  \n---")
-
-        
-        # Show a spinner while generating steps
-        with st.spinner('Generating Steps...'):
-            steps = generate_steps(process_name, expert_role, phases, company_type)
-        st.success('Steps Generated!')
-        st.write(f"Generated Steps: {steps}  \n---")
-
-        # Show a spinner while generating library
-        with st.spinner('Generating Library...'):
-            library = generate_library(steps)
-        st.session_state.library_dict = str_to_dict(library)  # Store in session state
-        
-    # Check if there's data in the session state to display
-        if st.session_state.library_dict is not None:
-            if st.session_state.library_dict != "Conversion failed":
-                csv_file_name = f"saved_csvs/{process_name}_generated.csv"  # Changed this line
-                write_dict_to_csv(st.session_state.library_dict, csv_file_name)
-
-                df = pd.read_csv(csv_file_name)
-                st.subheader('Generated CSV Data')
-                st.dataframe(df)
-
-                st.download_button(
-                    label="Download Library CSV",
-                    data=pd.read_csv(csv_file_name).to_csv(index=False),
-                    file_name="library.csv",
-                    mime="text/csv"
-                )
-            else:
-                st.error("Failed to convert library string to dictionary.")
+            st.download_button(
+                label="Download Library CSV",
+                data=csv_string,
+                file_name=f"{process_name}_library.csv",
+                mime="text/csv"
+            )
+        else:
+            st.error("Failed to convert library string to dictionary.")
 
 
 elif st.session_state.page == "All Processes":
     st.write("Debug: Entered All Processes block")  # Debugging line
     # Create directory if it does not exist
     if not os.path.exists('saved_csvs'):
-        st.write("Debug: saved_csvs directory does not exist. Creating now.")  # Debugging line
         os.makedirs('saved_csvs')
-    
-    st.write("Debug: Attempting to list saved_csvs directory")  # Debugging line
     saved_csvs = os.listdir('saved_csvs')
-    st.write(f"Debug: Successfully listed directory, found {len(saved_csvs)} files.")  # Debugging line
-    
     st.write("List of all saved processes:")
     for csv in saved_csvs:
         st.write(csv)
