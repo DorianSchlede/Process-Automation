@@ -96,8 +96,6 @@ def str_to_dict(dict_str):
 # Streamlit UI
 st.title("Process CSV Generator")
 
-
-
 # Sidebar for selection
 menu = ["Generate Process", "All Processes"]
 choice = st.sidebar.selectbox("Menu", menu)
@@ -115,50 +113,49 @@ if choice == "Generate Process":
     # Button to trigger all parts in sequence
     if st.button("Generate CSV File"):
     
-    # Show a spinner while generating the expert role
-    with st.spinner('Generating Expert Role...'):
-        expert_role = generate_expert_role(process_name)
-    st.success('Expert Role Generated!')
-    st.subheader('CSV Generation Process')
-    st.write("Generated Expert Role: " + expert_role + "\n" + "---")
+        # Show a spinner while generating the expert role
+        with st.spinner('Generating Expert Role...'):
+            expert_role = generate_expert_role(process_name)
+        st.success('Expert Role Generated!')
+        st.subheader('CSV Generation Process')
+        st.write("Generated Expert Role: " + expert_role + "\n" + "---")
 
-    # Show a spinner while generating phases
-    with st.spinner('Generating Phases...'):
-        phases = generate_phases(process_name, expert_role)
-    st.success('Phases Generated!')
-    st.write(f"Generated Phases: {phases}  \n---")
+        # Show a spinner while generating phases
+        with st.spinner('Generating Phases...'):
+            phases = generate_phases(process_name, expert_role)
+        st.success('Phases Generated!')
+        st.write(f"Generated Phases: {phases}  \n---")
 
-    
-    # Show a spinner while generating steps
-    with st.spinner('Generating Steps...'):
-        steps = generate_steps(process_name, expert_role, phases, company_type)
-    st.success('Steps Generated!')
-    st.write(f"Generated Steps: {steps}  \n---")
+        
+        # Show a spinner while generating steps
+        with st.spinner('Generating Steps...'):
+            steps = generate_steps(process_name, expert_role, phases, company_type)
+        st.success('Steps Generated!')
+        st.write(f"Generated Steps: {steps}  \n---")
 
-    # Show a spinner while generating library
-    with st.spinner('Generating Library...'):
-        library = generate_library(steps)
-    st.session_state.library_dict = str_to_dict(library)  # Store in session state
-    
-  # Check if there's data in the session state to display
-    if st.session_state.library_dict is not None:
-         if st.session_state.library_dict != "Conversion failed":
-            csv_file_name = f"{process_name}_generated.csv"
-            write_dict_to_csv(st.session_state.library_dict, csv_file_name)
-            
-            df = pd.read_csv(csv_file_name)
-            st.subheader('Generated CSV Data')
-            st.dataframe(df)
-            
-            st.download_button(
-                label="Download Library CSV",
-                data=pd.read_csv(csv_file_name).to_csv(index=False),
-                file_name="library.csv",
-                mime="text/csv"
-            )
-        else:
-            st.error("Failed to convert library string to dictionary.")
-
+        # Show a spinner while generating library
+        with st.spinner('Generating Library...'):
+            library = generate_library(steps)
+        st.session_state.library_dict = str_to_dict(library)  # Store in session state
+        
+    # Check if there's data in the session state to display
+        if st.session_state.library_dict is not None:
+            if st.session_state.library_dict != "Conversion failed":
+                csv_file_name = f"{process_name}_generated.csv"
+                write_dict_to_csv(st.session_state.library_dict, csv_file_name)
+                
+                df = pd.read_csv(csv_file_name)
+                st.subheader('Generated CSV Data')
+                st.dataframe(df)
+                
+                st.download_button(
+                    label="Download Library CSV",
+                    data=pd.read_csv(csv_file_name).to_csv(index=False),
+                    file_name="library.csv",
+                    mime="text/csv"
+                )
+            else:
+                st.error("Failed to convert library string to dictionary.")
 elif choice == "All Processes":
     # List all saved CSVs
     saved_csvs = os.listdir('saved_csvs')
