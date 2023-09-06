@@ -39,27 +39,25 @@ def generate_expert_role(process_name, company_type):
     return expert_role
 
 def generate_phases(process_name, expert_role, company_type):
-    prompt = f"{expert_role}. Generate a process for {process_name}. It is made for {company_type}. Map out the 3-5 high level phases of this process. Define Input, Task and Output for each of them in a few bullet points."
+    prompt = f"{expert_role}. Generate a process for {process_name}. It is made for {company_type}. Map out the 3-5 high level phases of this process we call it Process Level 1. You will output in the following way:\
+    process level 1. \
+    Input:\
+    Processes Level 2: \
+    Output: \
+    Define Input, Task and Output for each process level 1 in a few bullet points."
     phases = call_openai_api(prompt, max_tokens=1000)
     return phases
 
 def generate_steps(process_name, expert_role, phases, company_type):
     prompt = f"""{expert_role} You will create an extensive process for {process_name}. It is made for {company_type}. We will go from the existing Phases = Process Level one to process level 2 and level 3 which are the subprocesses of eachother. This is process level 1: {phases}.
-    You will first generate a bullet list of all Processes Level 2. 
+    You will generate a bullet list of all Processes Level 2 and 3. 
     In the following Structure:
-    [1. Process Level 1 Name]
-    - 1.1: Input, Task, Output
-    - 1.1.1: Input, Task, Output
-    - 1.1.2: Input, Task, Output
-    - 1.1.3:Input, Task, Output
-    - 1.2. Input, Task, Output
-    - 1.2.1 Input, Task, Output
-    - 1.2.2 Input, Task, Output
-    - 1.3. Input, Task, Output
-    - ...
-    [2. Process Level 1 Name]
-    - 2.1
-    - ...
+    - 1. Process Level 1 Name
+    - 1.1 Input, Task, Output
+    - 1.1.1 Input, Task, Output
+
+
+    You will generate every process up to level 3.
     Afterwards you will generate a detailled version of process level 3 with one bullet points each for input, task and output. Afterwards you will generate Process Level 3 for each process in process level 2. For each Process level 3 define, input, task and output."""
 
     steps = call_openai_api(prompt, max_tokens=3000)
