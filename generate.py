@@ -27,10 +27,15 @@ def call_openai_api(prompt, max_tokens=100, model="gpt-4", temperature=0):
 
 
 def generate_expert_role(process_name, company_type):
-    prompt = f"Describe an expert role with knowledge about {process_name} for {company_type} in up to 40 words. Write in plain text. Start your reply with 'You are'."
-    expert_role = call_openai_api(prompt, max_tokens=100, model="gpt-3.5-turbo")
-    print(f"Generated expert role: {expert_role}")
-    return expert_role
+    try:
+        prompt = f"Describe an expert role with knowledge about {process_name} for {company_type} in up to 40 words. Write in plain text. Start your reply with 'You are'."
+        expert_role = call_openai_api(prompt, max_tokens=100, model="gpt-3.5-turbo")
+        st.write(f"Generated expert role: {expert_role}")
+        return expert_role
+    except TypeError as te:
+        st.write(f"TypeError: {str(te)}")
+    except Exception as e:
+        st.write(f"An unexpected error occurred: {str(e)}")
 
 def generate_phases(process_name, expert_role, company_type):
     prompt = f"{expert_role}. Generate a process for {process_name}. It is made for {company_type}. Map out the 3-5 high level phases of this process. Define Input, Task and Output for each of them in a few bullet points."
