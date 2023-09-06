@@ -126,9 +126,18 @@ if st.session_state.page == "Generate Process":
 
     if st.session_state.library_dict is not None:
         if st.session_state.library_dict != "Conversion failed":
-            csv_file_name = f"{process_name}_generated.csv"  # Changed this line
-            write_dict_to_csv(st.session_state.library_dict, csv_file_name)
-            # ... rest of the code
+            csv_string = generate_csv_string(st.session_state.library_dict)  # Using the new function here
+            df = pd.read_csv(io.StringIO(csv_string))  # Reading the CSV string to DataFrame
+
+            st.subheader('Generated CSV Data')
+            st.dataframe(df)
+
+            st.download_button(
+                label="Download Library CSV",
+                data=csv_string,
+                file_name=f"{process_name}_library.csv",
+                mime="text/csv"
+            )
 
 
     # Button to trigger all parts in sequence
