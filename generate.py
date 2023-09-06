@@ -98,7 +98,7 @@ st.title("Process CSV Generator")
 
 # Sidebar for selection
 menu = ["Generate Process", "All Processes"]
-choice = st.sidebar.selectbox("Menu", menu)
+choice = st.sidebar.radio("Menu", menu)
 
 if choice == "Generate Process":
     st.write("Use this tool to generate any process in detail. Just type in the name and your situation and get a CSV file of processes, inputs and outputs. The generation will take about 3 Minutes.")
@@ -156,7 +156,12 @@ if choice == "Generate Process":
                 )
             else:
                 st.error("Failed to convert library string to dictionary.")
+
 elif choice == "All Processes":
+    # Create directory if it does not exist
+    if not os.path.exists('saved_csvs'):
+        os.makedirs('saved_csvs')
+
     # List all saved CSVs
     saved_csvs = os.listdir('saved_csvs')
     
