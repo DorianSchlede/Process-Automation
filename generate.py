@@ -126,6 +126,41 @@ if st.session_state.page == "Generate Process":
 
     if st.session_state.library_dict is not None:
         if st.session_state.library_dict != "Conversion failed":
+            csv_file_name = f"{process_name}_generated.csv"  # Changed this line
+            write_dict_to_csv(st.session_state.library_dict, csv_file_name)
+            # ... rest of the code
+
+
+    # Button to trigger all parts in sequence
+    if st.button("Generate CSV File"):
+    
+        # Show a spinner while generating the expert role
+        with st.spinner('Generating Expert Role...'):
+            expert_role = generate_expert_role(process_name, company_type)
+        st.success('Expert Role Generated!')
+        st.subheader('CSV Generation Process')
+        st.write("Generated Expert Role: " + expert_role + "\n" + "---")
+
+        # Show a spinner while generating phases
+        with st.spinner('Generating Phases...'):
+            phases = generate_phases(process_name, expert_role, company_type)
+        st.success('Phases Generated!')
+        st.write(f"Generated Phases: {phases}  \n---")
+
+        
+        # Show a spinner while generating steps
+        with st.spinner('Generating Steps...'):
+            steps = generate_steps(process_name, expert_role, phases, company_type)
+        st.success('Steps Generated!')
+        st.write(f"Generated Steps: {steps}  \n---")
+
+        # Show a spinner while generating library
+        with st.spinner('Generating Library...'):
+            library = generate_library(steps)
+        st.session_state.library_dict = str_to_dict(library)  # Store in session state
+        
+    if st.session_state.library_dict is not None:
+        if st.session_state.library_dict != "Conversion failed":
             csv_string = generate_csv_string(st.session_state.library_dict)
             df = pd.read_csv(io.StringIO(csv_string))
 
@@ -140,6 +175,8 @@ if st.session_state.page == "Generate Process":
             )
         else:
             st.error("Failed to convert library string to dictionary.")
+
+
 
 
 elif st.session_state.page == "All Processes":
