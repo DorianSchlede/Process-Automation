@@ -120,7 +120,7 @@ if choice == "Generate Process":
     
         # Show a spinner while generating the expert role
         with st.spinner('Generating Expert Role...'):
-            expert_role = generate_expert_role(process_name)
+            expert_role = generate_expert_role(process_name, company_type)
         st.success('Expert Role Generated!')
         st.subheader('CSV Generation Process')
         st.write("Generated Expert Role: " + expert_role + "\n" + "---")
