@@ -9,12 +9,6 @@ os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
 
 delimiter = "###"
 
-# Streamlit UI
-st.title("Process CSV Generator")
-st.write("Use this tool to generate any process in detail. Just type in the name and your situation and get a CSV file of processes, inputs and outputs. The generation will take about 3 Minutes.")
-st.image('https://i.imgur.com/kNfSHLC.png', caption='Example Output.', use_column_width=True)
-process_name = st.text_input("Enter the process name:", "User Research")
-company_type = st.text_input("Enter the company type:", "Startup")
 
 def call_openai_api(prompt, max_tokens=100, model="gpt-4", temperature=0):
     try:
@@ -98,6 +92,22 @@ def str_to_dict(dict_str):
     except (SyntaxError, ValueError):
         return "Conversion failed"
 
+
+# Streamlit UI
+st.title("Process CSV Generator")
+
+
+# Sidebar for selection
+menu = ["Generate Process", "All Processes"]
+choice = st.sidebar.selectbox("Menu", menu)
+
+if choice == "Generate Process":
+    st.write("Use this tool to generate any process in detail. Just type in the name and your situation and get a CSV file of processes, inputs and outputs. The generation will take about 3 Minutes.")
+    st.image('https://i.imgur.com/kNfSHLC.png', caption='Example Output.', use_column_width=True)
+    process_name = st.text_input("Enter the process name:", "User Research")
+    company_type = st.text_input("Enter the company type:", "Startup")
+
+
 # Initialize the session state variable if it doesn't exist yet
 if 'library_dict' not in st.session_state:
     st.session_state.library_dict = None
@@ -148,3 +158,21 @@ if st.session_state.library_dict is not None:
         )
     else:
         st.error("Failed to convert library string to dictionary.")
+
+
+elif choice == "All Processes":
+    # List all saved CSVs
+    saved_csvs = os.listdir('saved_csvs')
+    
+    st.write("List of all saved processes:")
+    for csv in saved_csvs:
+        st.write(csv)
+
+        # You can even add a download button for each saved CSV
+        csv_path = f"saved_csvs/{csv}"
+        st.download_button(
+            label=f"Download {csv}",
+            data=pd.read_csv(csv_path).to_csv(index=False),
+            file_name=csv,
+            mime="text/csv"
+        )
