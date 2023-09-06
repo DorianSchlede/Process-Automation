@@ -112,14 +112,14 @@ if st.button("Generate CSV File"):
     
     # Show a spinner while generating the expert role
     with st.spinner('Generating Expert Role...'):
-        expert_role = generate_expert_role(process_name)
+        expert_role = generate_expert_role(process_name, company_type)
     st.success('Expert Role Generated!')
     st.subheader('CSV Generation Process')
     st.write("Generated Expert Role: " + expert_role + "\n" + "---")
 
     # Show a spinner while generating phases
     with st.spinner('Generating Phases...'):
-        phases = generate_phases(process_name, expert_role)
+        phases = generate_phases(process_name, expert_role, company_type)
     st.success('Phases Generated!')
     st.write(f"Generated Phases: {phases}  \n---")
 
