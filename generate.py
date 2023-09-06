@@ -101,11 +101,18 @@ def str_to_dict(dict_str):
 # Streamlit UI
 st.title("Process CSV Generator")
 
-# Sidebar for selection
-menu = ["Generate Process", "All Processes"]
-choice = st.sidebar.radio("Menu", menu)
+# Create session state variable for page if it doesn't exist
+if 'page' not in st.session_state:
+    st.session_state.page = "Generate Process"
 
-if choice == "Generate Process":
+# Sidebar for selection
+st.sidebar.markdown("**Menu**")
+if st.sidebar.button("Generate Process"):
+    st.session_state.page = "Generate Process"
+if st.sidebar.button("All Processes"):
+    st.session_state.page = "All Processes"
+
+if st.session_state.page == "Generate Process":
     st.write("Use this tool to generate any process in detail. Just type in the name and your situation and get a CSV file of processes, inputs and outputs. The generation will take about 3 Minutes.")
     st.image('https://i.imgur.com/kNfSHLC.png', caption='Example Output.', use_column_width=True)
     process_name = st.text_input("Enter the process name:", "User Research")
@@ -127,7 +134,7 @@ if choice == "Generate Process":
 
         # Show a spinner while generating phases
         with st.spinner('Generating Phases...'):
-            phases = generate_phases(process_name, expert_role)
+            phases = generate_phases(process_name, expert_role, company_type)
         st.success('Phases Generated!')
         st.write(f"Generated Phases: {phases}  \n---")
 
@@ -162,7 +169,7 @@ if choice == "Generate Process":
             else:
                 st.error("Failed to convert library string to dictionary.")
 
-elif choice == "All Processes":
+elif st.session_state.page == "All Processes":
     st.write("Debug: Entered All Processes block")  # Debugging line
     # Create directory if it does not exist
     if not os.path.exists('saved_csvs'):
