@@ -81,7 +81,12 @@ def generate_library(steps):
     return library
 
 def write_dict_to_csv(dictionary, filename):
-    with open(filename, 'w', newline='') as csvfile:
+    # Make sure the 'saved_csvs' directory exists
+    if not os.path.exists('saved_csvs'):
+        os.makedirs('saved_csvs')
+
+    # Write the CSV file to the 'saved_csvs' directory
+    with open(f'saved_csvs/{filename}', 'w', newline='') as csvfile:
         fieldnames = ['ID', 'Process Level 1', 'Process Level 2', 'Process Level 3', 'Input', 'Task', 'Output']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
@@ -89,6 +94,7 @@ def write_dict_to_csv(dictionary, filename):
             row = {'ID': id}
             row.update(value)
             writer.writerow(row)
+
 
 def str_to_dict(dict_str):
     """Converts a dictionary string to a dictionary object."""
@@ -153,13 +159,13 @@ if st.session_state.page == "Generate Process":
     # Check if there's data in the session state to display
         if st.session_state.library_dict is not None:
             if st.session_state.library_dict != "Conversion failed":
-                csv_file_name = f"{process_name}_generated.csv"
+                csv_file_name = f"saved_csvs/{process_name}_generated.csv"  # Changed this line
                 write_dict_to_csv(st.session_state.library_dict, csv_file_name)
-                
+
                 df = pd.read_csv(csv_file_name)
                 st.subheader('Generated CSV Data')
                 st.dataframe(df)
-                
+
                 st.download_button(
                     label="Download Library CSV",
                     data=pd.read_csv(csv_file_name).to_csv(index=False),
@@ -168,6 +174,7 @@ if st.session_state.page == "Generate Process":
                 )
             else:
                 st.error("Failed to convert library string to dictionary.")
+
 
 elif st.session_state.page == "All Processes":
     st.write("Debug: Entered All Processes block")  # Debugging line
