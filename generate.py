@@ -158,22 +158,16 @@ if choice == "Generate Process":
                 st.error("Failed to convert library string to dictionary.")
 
 elif choice == "All Processes":
+    st.write("Debug: Entered All Processes block")  # Debugging line
     # Create directory if it does not exist
     if not os.path.exists('saved_csvs'):
+        st.write("Debug: saved_csvs directory does not exist. Creating now.")  # Debugging line
         os.makedirs('saved_csvs')
-
-    # List all saved CSVs
+    
+    st.write("Debug: Attempting to list saved_csvs directory")  # Debugging line
     saved_csvs = os.listdir('saved_csvs')
+    st.write(f"Debug: Successfully listed directory, found {len(saved_csvs)} files.")  # Debugging line
     
     st.write("List of all saved processes:")
     for csv in saved_csvs:
         st.write(csv)
-
-        # You can even add a download button for each saved CSV
-        csv_path = f"saved_csvs/{csv}"
-        st.download_button(
-            label=f"Download {csv}",
-            data=pd.read_csv(csv_path).to_csv(index=False),
-            file_name=csv,
-            mime="text/csv"
-        )
